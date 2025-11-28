@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>430 Bus Drift Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <style>
+    html, body, #map { height: 100%; margin: 0; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    async function main() {
+      const map = L.map('map').setView([51.455, -0.229], 13);
+
+      // OpenStreetMap tiles (fine for personal/low-traffic use)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      const geo = await (await fetch('stops-430-inbound.geojson')).json();
+
+      function style(feature) {
+        const c = feature.properties.color || "#2ecc71";
+        return {
+          radius: 7,
+          fillColor: c,
+          color: c,
+          weight: 1,
+          opacity: 1,
+          fillOpacity: 0.85
+        };
+      }
+
+      function onEach(feature, layer) {
+        const p = feature.properties;
+        const html = `
+          <strong>${p.name}</strong><br/>
+          Stop ID: ${p.stopId}<br/>
+          Drift: ${p.predictionDriftSec}s<br/>
+          Samples: ${p.samples}<br/>
+          Phantom rate: ${(p.phantomRate*100).toFixed(1)}%
+        `;
+        layer.bindPopup(html);
+      }
+
+      L.geoJSON(geo, {
+        pointToLayer: (f, latlng) => L.circleMarker(latlng, style(f)),
+        onEachFeature: onEach
+      }).addTo(map);
+    }
+
+    main();
+  </script>
+</body>
+</html>
