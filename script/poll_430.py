@@ -10,8 +10,8 @@ LINE_ID = "430"
 DIRECTION_FILTER = "inbound"  # change later to expand to outbound too
 
 # Local files (direction-aware filenames)
-STATE_PATH = f"{LINE_ID}-{DIRECTION_FILTER}-state.json"
-GEOJSON_OUT = f"stops-{LINE_ID}-{DIRECTION_FILTER}.geojson"
+STATE_PATH = f"../www/{LINE_ID}-{DIRECTION_FILTER}-state.json"
+GEOJSON_OUT = f"../www/stops-{LINE_ID}-{DIRECTION_FILTER}.geojson"
 
 # Tuning knobs
 POLL_SECONDS = 60                 # poll interval
